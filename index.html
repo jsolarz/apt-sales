@@ -1,762 +1,777 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>מכירת מעבר דירה - חייב למכור הכל השבוע!</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.6;
-        color: #2e3440;
-        background: #f5f6f7;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      .header {
-        text-align: center;
-        padding: 40px 0;
-      }
-
-      .header p {
-        font-size: 1.2em;
-        color: #e64545;
-        font-weight: 600;
-        margin-bottom: 15px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .header h1 {
-        font-size: 2.5em;
-        color: #2e3440;
-        margin-bottom: 10px;
-      }
-
-      .urgency-banner {
-        background: #e64545;
-        color: white;
-        padding: 12px 20px;
-        text-align: center;
-        font-weight: bold;
-        border-radius: 8px;
-        margin: 20px 0;
-        font-size: 1.2em;
-      }
-
-      .items-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 30px;
-        padding: 20px 0;
-      }
-
-      .item-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-        transition: all 0.3s ease;
-      }
-
-      .item-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 24px rgba(0, 0, 0, 0.2);
-      }
-
-      .item-images {
-        position: relative;
-        aspect-ratio: 4/3;
-        overflow: hidden;
-      }
-
-      .item-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-      }
-
-      .item-card:hover .item-image {
-        transform: scale(1.05);
-      }
-
-      .item-content {
-        padding: 25px;
-      }
-
-      .item-title {
-        font-size: 1.8em;
-        color: #2e3440;
-        margin-bottom: 10px;
-        font-weight: bold;
-      }
-
-      .item-price {
-        font-size: 2em;
-        color: #a3be8c;
-        font-weight: bold;
-        margin-bottom: 15px;
-      }
-
-      .item-description {
-        color: #4c566a;
-        font-size: 1.1em;
-        line-height: 1.8;
-      }
-
-      .sale-overlay {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: #e64545;
-        color: #eceff4;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: bold;
-        font-size: 1.1em;
-        text-shadow: 1px 1px 2px rgba(46, 52, 64, 0.3);
-        backdrop-filter: blur(5px);
-        border: 2px solid rgba(236, 239, 244, 0.3);
-        animation: glow 2s ease-in-out infinite alternate;
-        z-index: 2;
-      }
-
-      .image-gallery {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-      }
-
-      .image-gallery::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .image-gallery::after {
-        content: "🔍";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2em;
-        color: white;
-        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-      }
-
-      .image-gallery:hover::after {
-        opacity: 1;
-      }
-
-      .image-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 24px;
-        z-index: 10;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .image-nav:hover {
-        background: rgba(0, 0, 0, 0.7);
-        transform: translateY(-50%) scale(1.1);
-      }
-
-      .prev-btn {
-        right: 10px;
-      }
-
-      .next-btn {
-        left: 10px;
-      }
-
-      .image-counter {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 14px;
-        font-weight: bold;
-        z-index: 10;
-      }
-
-      @keyframes glow {
-        from {
-          box-shadow: 0 0 20px rgba(191, 97, 106, 0.5);
-        }
-        to {
-          box-shadow: 0 0 30px rgba(191, 97, 106, 0.8);
-        }
-      }
-
-      .contact-section {
-        background: rgba(236, 239, 244, 0.95);
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        box-shadow: 0 20px 40px rgba(46, 52, 64, 0.1);
-        backdrop-filter: blur(10px);
-      }
-
-      .contact-item {
-        background: #e64545;
-        color: white;
-        padding: 15px 30px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 1.1em;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        display: inline-block;
-      }
-
-      .contact-item:hover {
-        background: #e64545;
-        transform: translateY(-2px);
-      }
-
-      .contact-section h2 {
-        font-size: 2.5em;
-        color: #2e3440;
-        margin-bottom: 20px;
-      }
-
-      .contact-info {
-        display: flex;
-        justify-content: center;
-        gap: 50px;
-        flex-wrap: wrap;
-        margin-top: 30px;
-      }
-
-      .contact-item {
-        background: linear-gradient(135deg, #5e81ac, #81a1c1);
-        color: #eceff4;
-        padding: 20px 30px;
-        border-radius: 15px;
-        text-decoration: none;
-        font-size: 1.2em;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 20px rgba(94, 129, 172, 0.3);
-      }
-
-      .contact-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(94, 129, 172, 0.4);
-        color: #eceff4;
-      }
-
-      @media (max-width: 768px) {
-        .header h1 {
-          font-size: 2em;
-        }
-        .items-grid {
-          grid-template-columns: 1fr;
-        }
-        .contact-info {
-          flex-direction: column;
-          gap: 20px;
-        }
-      }
-
-      .gallery-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        backdrop-filter: blur(5px);
-      }
-
-      .gallery-modal-content {
-        position: relative;
-        margin: auto;
-        padding: 0;
-        width: 90%;
-        max-width: 1200px;
-        height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .gallery-image {
-        max-width: 100%;
-        max-height: 90vh;
-        object-fit: contain;
-      }
-
-      .gallery-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: none;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 24px;
-        z-index: 1010;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .gallery-nav:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-50%) scale(1.1);
-      }
-
-      .gallery-prev {
-        right: 20px;
-      }
-
-      .gallery-next {
-        left: 20px;
-      }
-
-      .gallery-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        color: white;
-        font-size: 35px;
-        font-weight: bold;
-        cursor: pointer;
-        z-index: 1010;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-      }
-
-      .gallery-close:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-
-      .gallery-counter {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 16px;
-        z-index: 1010;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <h1>🏠 מכירת מעבר דירה 🏠</h1>
-        <p>הכל חייב להימכר השבוע!</p>
-        <div class="urgency-banner">⏰ זמן מוגבל - מחירים מיוחדים לאיסוף מהיר! ⏰</div>
-      </header>
-
-      <div class="items-grid" id="itemsGrid">
-        <!-- Sample Item 1 - Multiple Images Example -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery" data-images='["sofa.jpg", "chair.jpg"]' data-current-index="0">
-              <img src="sofa.jpg" alt="ספה" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-              <button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
-              <button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
-              <div class="image-counter">1/2</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">ספה תלת מושבית עם כורסה</h3>
-            <div class="item-price">₪500</div>
-            <p class="item-description">ספה נוחה ויפה בצבע אפור, במצב מעולה. מושבים רכים וגב תומך. מידות: 200x90x80 ס״מ. מתאימה לסלון או חדר משפחה.</p>
-          </div>
-        </div>
-
-        <!-- Sample Item 2 -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="table4.jpg" alt="שולחן אוכל" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">שולחן אוכל + 4 כיסאות</h3>
-            <div class="item-price">₪500</div>
-            <p class="item-description">סט שולחן אוכל מעץ אלון מלא עם 4 כיסאות תואמים. השולחן באורך 140 ס״מ, נפתח ל180ס"מ. במצב טוב מאוד, מתאים לעד 6 אנשים.</p>
-          </div>
-        </div>
-
-        <!-- Sample Item 3 -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="fridge.jpg" alt="מקרר" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">מקרר</h3>
-            <div class="item-price">₪500</div>
-            <p class="item-description">
-              מקרר [שם יצרן] במצב מצוין, נפח של [X] ליטר. כולל תא הקפאה עליון, מדפי זכוכית מתכווננים ומגירות לירקות. צבע: [צבע]. מידות: גובה [X] ס"מ, רוחב [X]
-              ס"מ, עומק [X] ס"מ. חסכוני בחשמל, דירוג אנרגטי [A/B/C].
-            </p>
-          </div>
-        </div>
-
-        <!-- Sample Item 4 -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="oven.jpg" alt="תנור משולב" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">תנור משולב</h3>
-            <div class="item-price">₪500</div>
-            <p class="item-description">
-              תנור משולב [שם יצרן] במצב מעולה. כולל 4 להבות גז ותנור חשמלי. בעל הצתה אלקטרונית, טיימר דיגיטלי ותכניות אפייה מגוונות. צבע: [צבע]. רוחב [X] ס"מ.
-              כולל מגש ורשת אפייה. נקי ומתוחזק היטב.
-            </p>
-          </div>
-        </div>
-
-        <!-- Sample Item 5 -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="placard.jpg" alt="ארון" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">ארון</h3>
-            <div class="item-price">₪200</div>
-            <p class="item-description">
-              ארון בגדים דו-דלתי עם מדפים ומוט תלייה. צבע: [צבע]. מידות: גובה [X] ס"מ, רוחב [X] ס"מ, עומק [X] ס"מ. כולל [X] מדפים מתכווננים ו[יש/אין] מגירות
-              תחתונות. מצב כללי טוב, שמור היטב. מתאים לחדר שינה או חדר ילדים.
-            </p>
-          </div>
-        </div>
-
-        <!-- Sample Item 6 -->
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="bed1.jpg" alt="מזרן" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">מזרן</h3>
-            <div class="item-price">₪700</div>
-            <p class="item-description">
-              Olson & Wellness Mattress – Utopia Silver<br />עובי שכבת Wellness-X עליונה: 2 סנטימטר עובי מזרן כולל: 25 סנטימטר<br />
-              שכבות נוחות: 10 שכבות נוחות<br />
-              ליבת מזרן: מערך קפיצים מבודדים בכיס / ספוג פולימרי בחיתוך תלת מימדי.<br />
-              דרגת קושי: 5, medium<br />
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery" data-images='["bed2.jpg", "bed3.jpg", "bed4.jpg"]' data-current-index="0">
-              <img src="bed2.jpg" alt="שולחן קפה ו מזנון לטויזיה" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-              <button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
-              <button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
-              <div class="image-counter">1/3</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">בסיס מיטה עם גב 2 פסים</h3>
-            <div class="item-price">₪300</div>
-            <p class="item-description">
-              לנוחות מירבית כשקוראים ספר, צופים בטלוויזיה, לכל מטרה ומשדרגת את מראה המיטה. עשוי כולו מעץ אורן פיני מלא, חזק ויציב<br />
-              גובה הבסיס: 26 ס”מ <br />גובה המשענת: 80 ס”מ
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="carpet.jpg" alt="שטיח" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">שטיח</h3>
-            <div class="item-price">₪200</div>
-            <p class="item-description">
-              שטיח איכותי בסגנון מודרני. צבעים: כחול. מידות: 160x235 ס"מ. חומר: סיבים קצרים. מצב מצוין, נשמר היטב ונוקה לאחרונה. מתאים לסלון או חדר שינה.
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="heater.jpg" alt="מיקרוגל" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">מיקרוגל</h3>
-            <div class="item-price">₪100</div>
-            <p class="item-description">
-              מיקרוגל [שם יצרן], נפח [X] ליטר. צבע: [צבע]. כולל צלחת מסתובבת וכפתורי הפעלה נוחים. הספק [X] וואט. מצב טוב, עובד מצוין. מידות: רוחב [X] ס"מ, גובה
-              [X] ס"מ, עומק [X] ס"מ.
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="heater.jpg" alt="רדיאטור" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">רדיאטור</h3>
-            <div class="item-price">₪100</div>
-            <p class="item-description">
-              רדיאטור חשמלי [שם יצרן] עם [X] צלעות. הספק [X] וואט. כולל בקרת טמפרטורה ו-[X] דרגות חימום. צבע: [צבע]. במצב מצוין, שקט במיוחד. בטיחותי עם מנגנון
-              כיבוי אוטומטי בנפילה. גלגלים נשלפים להזזה נוחה.
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="coffeetbl.jpg" alt="שולחן קפה" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">שולחן קפה</h3>
-            <div class="item-price">₪300</div>
-            <p class="item-description">
-              שולחן קפה מעוצב בסגנון [מודרני/סקנדינבי/תעשייתי]. עשוי מ[חומר] איכותי. צבע: [צבע]. מידות: אורך [X] ס"מ, רוחב [X] ס"מ, גובה [X] ס"מ. כולל מדף תחתון
-              לאחסון. מצב מצוין, יציב במיוחד. מתאים לכל סלון.
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery">
-              <img src="tvstand.jpg" alt="מזנון טלויזיה" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">מזנון לטויזיה</h3>
-            <div class="item-price">₪300</div>
-            <p class="item-description">
-              מזנון טלוויזיה מודרני עם מדפים ותאי אחסון. מתאים למסך עד [X] אינץ'. מידות: אורך [X] ס"מ, גובה [X] ס"מ, עומק [X] ס"מ. כולל [X] תאי אחסון סגורים
-              ו-[X] מדפים פתוחים. חומר: [סוג העץ/חומר]. צבע: [צבע]. כולל פתחים להעברת כבלים.
-            </p>
-          </div>
-        </div>
-
-        <div class="item-card">
-          <div class="item-images">
-            <div class="image-gallery" data-images='["coffeetbl.jpg", "tvstand.jpg"]' data-current-index="0">
-              <img src="coffeetbl.jpg" alt="שולחן קפה ו מזנון לטויזיה" class="item-image" />
-              <div class="sale-overlay">מבצע אחרון!</div>
-              <button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
-              <button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
-              <div class="image-counter">1/2</div>
-            </div>
-          </div>
-          <div class="item-content">
-            <h3 class="item-title">שולחן קפה ו מזנון לטויזיה</h3>
-            <div class="item-price">₪500</div>
-            <p class="item-description">
-              סט תואם הכולל שולחן קפה ומזנון טלוויזיה בעיצוב [מודרני/סקנדינבי]. שולחן: אורך [X] ס"מ, רוחב [X] ס"מ, גובה [X] ס"מ. מזנון: אורך [X] ס"מ, גובה [X]
-              ס"מ, מתאים למסך עד [X] אינץ'. חומר: [סוג החומר], צבע: [צבע]. מצב מצוין, נמכרים כסט מושלם.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="contact-section">
-        <h2>📞 צרו קשר</h2>
-        <p style="font-size: 1.3em; color: #666; margin: 20px 0">לפרטים נוספים או לתיאום איסוף</p>
-        <div class="contact-info">
-          <a href="tel:+972-50-123-4567" class="contact-item"> 📱 058-789-1350 </a>
-          <a href="mailto:69gmedio0@mozmail.com" class="contact-item"> ✉️ 69gmedio0@mozmail.com </a>
-        </div>
-        <p style="margin-top: 30px; color: #666">זמינים 24/7 למענה מהיר • איסוף עצמי בלבד</p>
-      </div>
-    </div>
-
-    <!-- Gallery Modal -->
-    <div id="galleryModal" class="gallery-modal">
-      <span class="gallery-close" onclick="closeGallery()">&times;</span>
-      <button class="gallery-nav gallery-prev" onclick="changeGalleryImage(-1)">‹</button>
-      <button class="gallery-nav gallery-next" onclick="changeGalleryImage(1)">›</button>
-      <div class="gallery-modal-content">
-        <img src="" class="gallery-image" id="galleryImage" alt="Gallery image" />
-      </div>
-      <div class="gallery-counter" id="galleryCounter"></div>
-    </div>
-
-    <script>
-      // Gallery Modal State
-      let currentGallery = null;
-
-      // Image gallery navigation
-      function changeImage(button, direction) {
-        const gallery = button.closest(".image-gallery");
-        const img = gallery.querySelector(".item-image");
-        const counter = gallery.querySelector(".image-counter");
-        const imagesData = JSON.parse(gallery.dataset.images || "[]");
-
-        if (!imagesData || imagesData.length <= 1) return;
-
-        let currentIndex = parseInt(gallery.dataset.currentIndex || 0);
-        currentIndex = (currentIndex + direction + imagesData.length) % imagesData.length;
-
-        // Stop event propagation to prevent modal opening when clicking navigation buttons
-        event.stopPropagation();
-
-        gallery.dataset.currentIndex = currentIndex;
-        img.src = imagesData[currentIndex];
-        if (counter) {
-          counter.textContent = `${currentIndex + 1}/${imagesData.length}`;
-        }
-      }
-
-      // Close modal when clicking outside
-      window.onclick = function (event) {
-        const galleryModal = document.getElementById("galleryModal");
-        if (event.target == galleryModal) {
-          closeGallery();
-        }
-      };
-
-      // Gallery Modal Functions
-      function openGallery(gallery) {
-        const galleryModal = document.getElementById("galleryModal");
-        const galleryImage = document.getElementById("galleryImage");
-        const imagesData = JSON.parse(gallery.dataset.images || "[]");
-
-        if (!imagesData || imagesData.length === 0) {
-          // If no image array, use the current image
-          const currentImage = gallery.querySelector(".item-image").src;
-          currentGallery = {
-            images: [currentImage],
-            currentIndex: 0,
-          };
-        } else {
-          currentGallery = {
-            images: imagesData,
-            currentIndex: parseInt(gallery.dataset.currentIndex || 0),
-          };
-        }
-
-        updateGalleryImage();
-        galleryModal.style.display = "block";
-      }
-
-      function closeGallery() {
-        const galleryModal = document.getElementById("galleryModal");
-        galleryModal.style.display = "none";
-        currentGallery = null;
-      }
-
-      function changeGalleryImage(direction) {
-        if (!currentGallery) return;
-
-        currentGallery.currentIndex = (currentGallery.currentIndex + direction + currentGallery.images.length) % currentGallery.images.length;
-        updateGalleryImage();
-      }
-
-      function updateGalleryImage() {
-        const galleryImage = document.getElementById("galleryImage");
-        const galleryCounter = document.getElementById("galleryCounter");
-
-        galleryImage.src = currentGallery.images[currentGallery.currentIndex];
-        galleryCounter.textContent = `${currentGallery.currentIndex + 1}/${currentGallery.images.length}`;
-      }
-
-      // Add click event listeners to all image galleries
-      document.addEventListener("DOMContentLoaded", function () {
-        const galleries = document.querySelectorAll(".image-gallery");
-        galleries.forEach((gallery) => {
-          gallery.addEventListener("click", function (event) {
-            // Only open gallery if not clicking navigation buttons
-            if (!event.target.classList.contains("image-nav")) {
-              openGallery(this);
-            }
-          });
-        });
-      });
-
-      // Smooth scroll animation for mobile
-      document.addEventListener("DOMContentLoaded", function () {
-        const items = document.querySelectorAll(".item-card");
-        items.forEach((item, index) => {
-          item.style.animationDelay = `${index * 0.1}s`;
-        });
-      });
-    </script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>מכירת מעבר דירה - חייב למכור הכל השבוע!</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				line-height: 1.6;
+				color: #2e3440;
+				background: #f5f6f7;
+				min-height: 100vh;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+
+			.header {
+				text-align: center;
+				padding: 40px 0;
+			}
+
+			.header p {
+				font-size: 1.2em;
+				color: #e64545;
+				font-weight: 600;
+				margin-bottom: 15px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.header h1 {
+				font-size: 2.5em;
+				color: #2e3440;
+				margin-bottom: 10px;
+			}
+
+			.urgency-banner {
+				background: #e64545;
+				color: white;
+				padding: 12px 20px;
+				text-align: center;
+				font-weight: bold;
+				border-radius: 8px;
+				margin: 20px 0;
+				font-size: 1.2em;
+			}
+
+			.items-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 30px;
+				padding: 20px 0;
+			}
+
+			.item-card {
+				background: white;
+				border-radius: 12px;
+				overflow: hidden;
+				box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+				transition: all 0.3s ease;
+			}
+
+			.item-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 16px 24px rgba(0, 0, 0, 0.2);
+			}
+
+			.item-images {
+				position: relative;
+				aspect-ratio: 4/3;
+				overflow: hidden;
+			}
+
+			.item-image {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: transform 0.3s ease;
+			}
+
+			.item-card:hover .item-image {
+				transform: scale(1.05);
+			}
+
+			.item-content {
+				padding: 25px;
+			}
+
+			.item-title {
+				font-size: 1.8em;
+				color: #2e3440;
+				margin-bottom: 10px;
+				font-weight: bold;
+			}
+
+			.item-price {
+				font-size: 2em;
+				color: #a3be8c;
+				font-weight: bold;
+				margin-bottom: 15px;
+			}
+
+			.item-description {
+				color: #4c566a;
+				font-size: 1.1em;
+				line-height: 1.8;
+			}
+
+			.sale-overlay {
+				position: absolute;
+				top: 20px;
+				left: 20px;
+				background: #e64545;
+				color: #eceff4;
+				padding: 10px 20px;
+				border-radius: 25px;
+				font-weight: bold;
+				font-size: 1.1em;
+				text-shadow: 1px 1px 2px rgba(46, 52, 64, 0.3);
+				backdrop-filter: blur(5px);
+				border: 2px solid rgba(236, 239, 244, 0.3);
+				animation: glow 2s ease-in-out infinite alternate;
+				z-index: 2;
+			}
+
+			.image-gallery {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				cursor: pointer;
+			}
+
+			.image-gallery::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0, 0, 0, 0.3);
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+
+			.image-gallery::after {
+				content: "🔍";
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 2em;
+				color: white;
+				text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+				opacity: 0;
+				transition: opacity 0.3s ease;
+				pointer-events: none;
+			}
+
+			.image-gallery:hover::after {
+				opacity: 1;
+			}
+
+			.image-nav {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				background: rgba(0, 0, 0, 0.5);
+				color: white;
+				border: none;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				cursor: pointer;
+				font-size: 24px;
+				z-index: 10;
+				transition: all 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.image-nav:hover {
+				background: rgba(0, 0, 0, 0.7);
+				transform: translateY(-50%) scale(1.1);
+			}
+
+			.prev-btn {
+				right: 10px;
+			}
+
+			.next-btn {
+				left: 10px;
+			}
+
+			.image-counter {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
+				background: rgba(0, 0, 0, 0.7);
+				color: white;
+				padding: 5px 10px;
+				border-radius: 15px;
+				font-size: 14px;
+				font-weight: bold;
+				z-index: 10;
+			}
+
+			@keyframes glow {
+				from {
+					box-shadow: 0 0 20px rgba(191, 97, 106, 0.5);
+				}
+				to {
+					box-shadow: 0 0 30px rgba(191, 97, 106, 0.8);
+				}
+			}
+
+			.contact-section {
+				background: rgba(236, 239, 244, 0.95);
+				border-radius: 20px;
+				padding: 40px;
+				text-align: center;
+				box-shadow: 0 20px 40px rgba(46, 52, 64, 0.1);
+				backdrop-filter: blur(10px);
+			}
+
+			.contact-item {
+				background: #e64545;
+				color: white;
+				padding: 15px 30px;
+				border-radius: 4px;
+				text-decoration: none;
+				font-size: 1.1em;
+				font-weight: 600;
+				transition: all 0.2s ease;
+				display: inline-block;
+			}
+
+			.contact-item:hover {
+				background: #e64545;
+				transform: translateY(-2px);
+			}
+
+			.contact-section h2 {
+				font-size: 2.5em;
+				color: #2e3440;
+				margin-bottom: 20px;
+			}
+
+			.contact-info {
+				display: flex;
+				justify-content: center;
+				gap: 50px;
+				flex-wrap: wrap;
+				margin-top: 30px;
+			}
+
+			.contact-item {
+				background: linear-gradient(135deg, #5e81ac, #81a1c1);
+				color: #eceff4;
+				padding: 20px 30px;
+				border-radius: 15px;
+				text-decoration: none;
+				font-size: 1.2em;
+				font-weight: bold;
+				transition: all 0.3s ease;
+				box-shadow: 0 10px 20px rgba(94, 129, 172, 0.3);
+			}
+
+			.contact-item:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 20px 40px rgba(94, 129, 172, 0.4);
+				color: #eceff4;
+			}
+
+			@media (max-width: 768px) {
+				.header h1 {
+					font-size: 2em;
+				}
+				.items-grid {
+					grid-template-columns: 1fr;
+				}
+				.contact-info {
+					flex-direction: column;
+					gap: 20px;
+				}
+			}
+
+			.gallery-modal {
+				display: none;
+				position: fixed;
+				z-index: 1000;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.9);
+				backdrop-filter: blur(5px);
+			}
+
+			.gallery-modal-content {
+				position: relative;
+				margin: auto;
+				padding: 0;
+				width: 90%;
+				max-width: 1200px;
+				height: 90vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.gallery-image {
+				max-width: 100%;
+				max-height: 90vh;
+				object-fit: contain;
+			}
+
+			.gallery-nav {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				background: rgba(255, 255, 255, 0.2);
+				color: white;
+				border: none;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				cursor: pointer;
+				font-size: 24px;
+				z-index: 1010;
+				transition: all 0.3s ease;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.gallery-nav:hover {
+				background: rgba(255, 255, 255, 0.3);
+				transform: translateY(-50%) scale(1.1);
+			}
+
+			.gallery-prev {
+				right: 20px;
+			}
+
+			.gallery-next {
+				left: 20px;
+			}
+
+			.gallery-close {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				color: white;
+				font-size: 35px;
+				font-weight: bold;
+				cursor: pointer;
+				z-index: 1010;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.2);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: all 0.3s ease;
+			}
+
+			.gallery-close:hover {
+				background: rgba(255, 255, 255, 0.3);
+			}
+
+			.gallery-counter {
+				position: absolute;
+				bottom: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: rgba(0, 0, 0, 0.7);
+				color: white;
+				padding: 8px 16px;
+				border-radius: 20px;
+				font-size: 16px;
+				z-index: 1010;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header class="header">
+				<h1>🏠 מכירת מעבר דירה 🏠</h1>
+				<p>הכל חייב להימכר השבוע!</p>
+				<div class="urgency-banner">⏰ זמן מוגבל - מחירים מיוחדים לאיסוף מהיר! ⏰</div>
+			</header>
+
+			<div class="items-grid" id="itemsGrid">
+				<!-- Sample Item 1 - Multiple Images Example -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery" data-images='["sofa.jpg", "chair.jpg"]' data-current-index="0">
+							<img src="sofa.jpg" alt="ספה" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+							<button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
+							<button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
+							<div class="image-counter">1/2</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">ספה תלת מושבית עם כורסה</h3>
+						<div class="item-price">₪500</div>
+						<p class="item-description">
+							ספה נוחה ויפה בצבע אפור, במצב מעולה. מושבים רכים וגב תומך. מידות: 200x90x80 ס״מ. מתאימה לסלון או חדר משפחה.
+						</p>
+					</div>
+				</div>
+
+				<!-- Sample Item 2 -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="table4.jpg" alt="שולחן אוכל" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">שולחן אוכל + 4 כיסאות</h3>
+						<div class="item-price">₪500</div>
+						<p class="item-description">
+							סט שולחן אוכל מעץ אלון מלא עם 4 כיסאות תואמים. השולחן באורך 140 ס״מ, נפתח ל180ס"מ. במצב טוב מאוד, מתאים לעד 6
+							אנשים.
+						</p>
+					</div>
+				</div>
+
+				<!-- Sample Item 3 -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="fridge.jpg" alt="מקרר" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">מקרר ‏מקפיא עליון Haier HER9370SS ‏347 ‏ליטר האייר</h3>
+						<div class="item-price">₪500</div>
+						<p class="item-description">
+							מספר דלתות: 2 דלתות<br />
+							מיקום המקפיא: מקפיא עליון<br />
+							דירוג אנרגטי קודם: C<br />
+							נפח כללי: 347 ליטר<br />
+						</p>
+					</div>
+				</div>
+
+				<!-- Sample Item 4 -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="oven.jpg" alt="תנור משולב" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">תנור משולב</h3>
+						<div class="item-price">₪500</div>
+						<p class="item-description">
+							תנור משולב [שם יצרן] במצב מעולה. כולל 4 להבות גז ותנור חשמלי. בעל הצתה אלקטרונית, טיימר דיגיטלי ותכניות אפייה
+							מגוונות. צבע: [צבע]. רוחב [X] ס"מ. כולל מגש ורשת אפייה. נקי ומתוחזק היטב.
+						</p>
+					</div>
+				</div>
+
+				<!-- Sample Item 5 -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="placard.jpg" alt="ארון" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">ארון</h3>
+						<div class="item-price">₪200</div>
+						<p class="item-description">
+							ארון בגדים דו-דלתי עם מדפים ומוט תלייה. צבע: [צבע]. מידות: גובה [X] ס"מ, רוחב [X] ס"מ, עומק [X] ס"מ. כולל [X]
+							מדפים מתכווננים ו[יש/אין] מגירות תחתונות. מצב כללי טוב, שמור היטב. מתאים לחדר שינה או חדר ילדים.
+						</p>
+					</div>
+				</div>
+
+				<!-- Sample Item 6 -->
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="bed1.jpg" alt="מזרן" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">מזרן</h3>
+						<div class="item-price">₪700</div>
+						<p class="item-description">
+							Olson & Wellness Mattress – Utopia Silver<br />עובי שכבת Wellness-X עליונה: 2 סנטימטר עובי מזרן כולל: 25
+							סנטימטר<br />
+							שכבות נוחות: 10 שכבות נוחות<br />
+							ליבת מזרן: מערך קפיצים מבודדים בכיס / ספוג פולימרי בחיתוך תלת מימדי.<br />
+							דרגת קושי: 5, medium<br />
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery" data-images='["bed2.jpg", "bed3.jpg", "bed4.jpg"]' data-current-index="0">
+							<img src="bed2.jpg" alt="שולחן קפה ו מזנון לטויזיה" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+							<button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
+							<button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
+							<div class="image-counter">1/3</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">בסיס מיטה עם גב 2 פסים</h3>
+						<div class="item-price">₪300</div>
+						<p class="item-description">
+							לנוחות מירבית כשקוראים ספר, צופים בטלוויזיה, לכל מטרה ומשדרגת את מראה המיטה. עשוי כולו מעץ אורן פיני מלא, חזק
+							ויציב<br />
+							גובה הבסיס: 26 ס”מ <br />גובה המשענת: 80 ס”מ
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="carpet.jpg" alt="שטיח" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">שטיח</h3>
+						<div class="item-price">₪200</div>
+						<p class="item-description">
+							שטיח איכותי בסגנון מודרני. צבעים: כחול. מידות: 160x235 ס"מ. חומר: סיבים קצרים. מצב מצוין, נשמר היטב ונוקה
+							לאחרונה. מתאים לסלון או חדר שינה.
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="heater.jpg" alt="מיקרוגל" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">מיקרוגל</h3>
+						<div class="item-price">₪100</div>
+						<p class="item-description">
+							מיקרוגל [שם יצרן], נפח [X] ליטר. צבע: [צבע]. כולל צלחת מסתובבת וכפתורי הפעלה נוחים. הספק [X] וואט. מצב טוב, עובד
+							מצוין. מידות: רוחב [X] ס"מ, גובה [X] ס"מ, עומק [X] ס"מ.
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="heater.jpg" alt="רדיאטור" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">רדיאטור</h3>
+						<div class="item-price">₪100</div>
+						<p class="item-description">
+							רדיאטור 9 צלעות / ATL-2009 Goldline<br /><br />
+							גלגלים המאפשרים ניידות ויציבות מושלמת, ידית אינטגרלית מבודדת חום לאחיזה והזזה בעת הצורך, כולל מתקן לחות למניעת
+							ייבוש האוויר בחדר.<br /><br />
+							הספק:<br />
+							דרגת חום נמוכה: 800W<br />
+							דרגת חימום גבוהה : 1200W<br />
+							כשמופעלים ביחד : 2000W<br /><br />
+							מידות(כאשר הגלגלים מורכבים):
+							<br />רוחב: 44 ס"מ <br />גובה: 63 ס"מ<br />
+							עומק: 24 ס"מ
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="coffeetbl.jpg" alt="שולחן קפה" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">שולחן קפה</h3>
+						<div class="item-price">₪300</div>
+						<p class="item-description">
+							שולחן קפה מעוצב בסגנון מודרני. צבע: טבעי. מידות: אורך 120 ס"מ, רוחב 60 ס"מ, גובה 60 ס"מ. מצב מצוין, יציב במיוחד.
+							מתאים לכל סלון.
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery">
+							<img src="tvstand.jpg" alt="מזנון טלויזיה" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">מזנון לטויזיה</h3>
+						<div class="item-price">₪300</div>
+						<p class="item-description">
+							מזנון טלוויזיה מודרני. מידות: אורך 120 ס"מ, גובה 60 ס"מ, עומק 50 ס"מ. צבע: טבעי. כולל פתחים להעברת כבלים.
+						</p>
+					</div>
+				</div>
+
+				<div class="item-card">
+					<div class="item-images">
+						<div class="image-gallery" data-images='["coffeetbl.jpg", "tvstand.jpg"]' data-current-index="0">
+							<img src="coffeetbl.jpg" alt="שולחן קפה ו מזנון לטויזיה" class="item-image" />
+							<div class="sale-overlay">מבצע אחרון!</div>
+							<button class="image-nav prev-btn" onclick="changeImage(this, -1)">‹</button>
+							<button class="image-nav next-btn" onclick="changeImage(this, 1)">›</button>
+							<div class="image-counter">1/2</div>
+						</div>
+					</div>
+					<div class="item-content">
+						<h3 class="item-title">שולחן קפה ו מזנון לטויזיה</h3>
+						<div class="item-price">₪500</div>
+						<p class="item-description">סט תואם הכולל שולחן קפה ומזנון טלוויזיה.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="contact-section">
+				<h2>📞 צרו קשר</h2>
+				<p style="font-size: 1.3em; color: #666; margin: 20px 0">לפרטים נוספים או לתיאום איסוף</p>
+				<div class="contact-info">
+					<a href="tel:+972-50-123-4567" class="contact-item"> 📱 058-789-1350 </a>
+					<a href="mailto:69gmedio0@mozmail.com" class="contact-item"> ✉️ 69gmedio0@mozmail.com </a>
+				</div>
+				<p style="margin-top: 30px; color: #666">זמינים 24/7 למענה מהיר • איסוף עצמי בלבד</p>
+			</div>
+		</div>
+
+		<!-- Gallery Modal -->
+		<div id="galleryModal" class="gallery-modal">
+			<span class="gallery-close" onclick="closeGallery()">&times;</span>
+			<button class="gallery-nav gallery-prev" onclick="changeGalleryImage(-1)">‹</button>
+			<button class="gallery-nav gallery-next" onclick="changeGalleryImage(1)">›</button>
+			<div class="gallery-modal-content">
+				<img src="" class="gallery-image" id="galleryImage" alt="Gallery image" />
+			</div>
+			<div class="gallery-counter" id="galleryCounter"></div>
+		</div>
+
+		<script>
+			// Gallery Modal State
+			let currentGallery = null
+
+			// Image gallery navigation
+			function changeImage(button, direction) {
+				const gallery = button.closest(".image-gallery")
+				const img = gallery.querySelector(".item-image")
+				const counter = gallery.querySelector(".image-counter")
+				const imagesData = JSON.parse(gallery.dataset.images || "[]")
+
+				if (!imagesData || imagesData.length <= 1) return
+
+				let currentIndex = parseInt(gallery.dataset.currentIndex || 0)
+				currentIndex = (currentIndex + direction + imagesData.length) % imagesData.length
+
+				// Stop event propagation to prevent modal opening when clicking navigation buttons
+				event.stopPropagation()
+
+				gallery.dataset.currentIndex = currentIndex
+				img.src = imagesData[currentIndex]
+				if (counter) {
+					counter.textContent = `${currentIndex + 1}/${imagesData.length}`
+				}
+			}
+
+			// Close modal when clicking outside
+			window.onclick = function (event) {
+				const galleryModal = document.getElementById("galleryModal")
+				if (event.target == galleryModal) {
+					closeGallery()
+				}
+			}
+
+			// Gallery Modal Functions
+			function openGallery(gallery) {
+				const galleryModal = document.getElementById("galleryModal")
+				const galleryImage = document.getElementById("galleryImage")
+				const imagesData = JSON.parse(gallery.dataset.images || "[]")
+
+				if (!imagesData || imagesData.length === 0) {
+					// If no image array, use the current image
+					const currentImage = gallery.querySelector(".item-image").src
+					currentGallery = {
+						images: [currentImage],
+						currentIndex: 0,
+					}
+				} else {
+					currentGallery = {
+						images: imagesData,
+						currentIndex: parseInt(gallery.dataset.currentIndex || 0),
+					}
+				}
+
+				updateGalleryImage()
+				galleryModal.style.display = "block"
+			}
+
+			function closeGallery() {
+				const galleryModal = document.getElementById("galleryModal")
+				galleryModal.style.display = "none"
+				currentGallery = null
+			}
+
+			function changeGalleryImage(direction) {
+				if (!currentGallery) return
+
+				currentGallery.currentIndex =
+					(currentGallery.currentIndex + direction + currentGallery.images.length) % currentGallery.images.length
+				updateGalleryImage()
+			}
+
+			function updateGalleryImage() {
+				const galleryImage = document.getElementById("galleryImage")
+				const galleryCounter = document.getElementById("galleryCounter")
+
+				galleryImage.src = currentGallery.images[currentGallery.currentIndex]
+				galleryCounter.textContent = `${currentGallery.currentIndex + 1}/${currentGallery.images.length}`
+			}
+
+			// Add click event listeners to all image galleries
+			document.addEventListener("DOMContentLoaded", function () {
+				const galleries = document.querySelectorAll(".image-gallery")
+				galleries.forEach((gallery) => {
+					gallery.addEventListener("click", function (event) {
+						// Only open gallery if not clicking navigation buttons
+						if (!event.target.classList.contains("image-nav")) {
+							openGallery(this)
+						}
+					})
+				})
+			})
+
+			// Smooth scroll animation for mobile
+			document.addEventListener("DOMContentLoaded", function () {
+				const items = document.querySelectorAll(".item-card")
+				items.forEach((item, index) => {
+					item.style.animationDelay = `${index * 0.1}s`
+				})
+			})
+		</script>
+	</body>
 </html>
